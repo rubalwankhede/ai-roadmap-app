@@ -1,7 +1,19 @@
 import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { auth } from '../firebase/config'
 
 function Dashboard() {
   const navigate = useNavigate()
+  const [user, setUser] = useState(null)
+
+  useEffect(() => {
+    const unsubscribe = auth.onAuthStateChanged((u) => {
+      if (u) setUser(u)
+    })
+    return () => unsubscribe()
+  }, [])
+
+  const firstName = user?.displayName?.split(' ')[0] || 'there'
 
   const cards = [
     { emoji: '🗺️', title: 'My Roadmap', desc: 'View your learning path', path: '/roadmap' },
@@ -16,10 +28,28 @@ function Dashboard() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-8">
-        <h1 className="text-2xl font-bold">Welcome back! 👋</h1>
-        <p className="text-blue-100 mt-1">Continue your journey to becoming a Software Engineer</p>
+        
+        {/* User info row */}
+        <div className="flex items-center justify-between mb-4">
+          <div className="flex items-center gap-3">
+            {user?.photoURL ? (
+              <img src={user.photoURL} alt="avatar" className="w-10 h-10 rounded-full border-2 border-white" />
+            ) : (
+              <div className="w-10 h-10 rounded-full bg-white bg-opacity-30 flex items-center justify-center text-lg font-bold">
+                {firstName[0]}
+              </div>
+            )}
+            <div>
+              <h1 className="text-xl font-bold">Hey, {firstName}! 👋</h1>
+              <p className="text-blue-100 text-xs">{user?.email}</p>
+            </div>
+          </div>
+        </div>
+
+        <p className="text-blue-100 text-sm">Continue your journey to becoming a Software Engineer</p>
+        
+        {/* Progress */}
         <div className="mt-4 bg-white bg-opacity-20 rounded-xl p-4">
           <div className="flex justify-between text-sm mb-2">
             <span>Overall Progress</span>
@@ -31,7 +61,6 @@ function Dashboard() {
         </div>
       </div>
 
-      {/* Cards */}
       <div className="p-6 grid grid-cols-2 gap-4">
         {cards.map((card) => (
           <div

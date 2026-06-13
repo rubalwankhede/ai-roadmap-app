@@ -7,6 +7,7 @@ function Quiz() {
   const [selected, setSelected] = useState(null)
   const [score, setScore] = useState(0)
   const [finished, setFinished] = useState(false)
+  const [answers, setAnswers] = useState([])
 
   const questions = [
     {
@@ -38,18 +39,76 @@ function Quiz() {
   }
 
   const next = () => {
+    setAnswers([...answers, selected])
     if (current + 1 >= questions.length) setFinished(true)
     else { setCurrent(current + 1); setSelected(null) }
   }
 
+  const percentage = Math.round((score / questions.length) * 100)
+
+  const getMessage = () => {
+    if (percentage === 100) return { text: 'Perfect Score! 🔥', color: 'text-green-600' }
+    if (percentage >= 75) return { text: 'Great job! 👏', color: 'text-blue-600' }
+    if (percentage >= 50) return { text: 'Good effort! 💪', color: 'text-yellow-600' }
+    return { text: 'Keep practicing! 📚', color: 'text-red-500' }
+  }
+
   if (finished) return (
-    <div className="min-h-screen bg-gray-50 flex items-center justify-center p-6">
-      <div className="bg-white rounded-2xl p-10 text-center shadow-sm w-full max-w-md">
-        <div className="text-6xl mb-4">🎉</div>
-        <h1 className="text-2xl font-bold text-gray-800">Quiz Complete!</h1>
-        <p className="text-gray-500 mt-2">You scored</p>
-        <p className="text-5xl font-bold text-blue-600 my-4">{score}/{questions.length}</p>
-        <button onClick={() => navigate('/dashboard')} className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold">
+    <div className="min-h-screen bg-gray-50 pb-20">
+      {/* Header */}
+      <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-8 text-center">
+        <div className="text-5xl mb-2">🎉</div>
+        <h1 className="text-2xl font-bold">Quiz Complete!</h1>
+        <p className={`text-lg font-semibold mt-1 ${getMessage().color} bg-white rounded-full px-4 py-1 inline-block mt-2`}>
+          {getMessage().text}
+        </p>
+      </div>
+
+      {/* Score Card */}
+      <div className="px-6 -mt-4">
+        <div className="bg-white rounded-2xl p-6 shadow-sm text-center mb-4">
+          <p className="text-gray-500 text-sm">Your Score</p>
+          <p className="text-6xl font-bold text-blue-600 my-2">{score}/{questions.length}</p>
+          <div className="bg-gray-100 rounded-full h-3 mt-3">
+            <div
+              className="bg-blue-600 rounded-full h-3 transition-all duration-500"
+              style={{ width: `${percentage}%` }}
+            ></div>
+          </div>
+          <p className="text-gray-500 text-sm mt-2">{percentage}% correct</p>
+        </div>
+
+        {/* Answer Review */}
+        <h2 className="font-bold text-gray-800 mb-3">Answer Review</h2>
+        <div className="space-y-3 mb-6">
+          {questions.map((q, i) => {
+            const userAnswer = answers[i]
+            const isCorrect = userAnswer === q.answer
+            return (
+              <div key={i} className={`bg-white rounded-2xl p-4 shadow-sm border-l-4 ${isCorrect ? 'border-green-500' : 'border-red-400'}`}>
+                <p className="font-medium text-gray-800 text-sm mb-2">{q.q}</p>
+                <p className={`text-xs ${isCorrect ? 'text-green-600' : 'text-red-500'}`}>
+                  {isCorrect ? '✅ Correct' : `❌ You answered: ${q.options[userAnswer]}`}
+                </p>
+                {!isCorrect && (
+                  <p className="text-xs text-green-600 mt-1">✅ Correct answer: {q.options[q.answer]}</p>
+                )}
+              </div>
+            )
+          })}
+        </div>
+
+        {/* Buttons */}
+        <button
+          onClick={() => navigate('/roadmap')}
+          className="w-full bg-blue-600 text-white py-3 rounded-xl font-semibold mb-3"
+        >
+          Continue Roadmap →
+        </button>
+        <button
+          onClick={() => navigate('/dashboard')}
+          className="w-full bg-gray-100 text-gray-700 py-3 rounded-xl font-semibold"
+        >
           Back to Dashboard
         </button>
       </div>

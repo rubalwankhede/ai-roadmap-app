@@ -1,16 +1,47 @@
-# React + Vite
+# CareerMap AI 🚀
 
-This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
+A personalized AI-powered career roadmap app for students and developers. Built with React, Firebase, and Gemini AI.
 
-Currently, two official plugins are available:
+## Live Demo
+🔗 [https://ai-roadmap-app-sigma.vercel.app](https://ai-roadmap-app-sigma.vercel.app)
 
-- [@vitejs/plugin-react](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react) uses [Oxc](https://oxc.rs)
-- [@vitejs/plugin-react-swc](https://github.com/vitejs/vite-plugin-react/blob/main/packages/plugin-react-swc) uses [SWC](https://swc.rs/)
+## Screenshots
 
-## React Compiler
+> Sign in → Onboarding → Dashboard → Roadmap → Quiz → Mock Interview
 
-The React Compiler is not enabled on this template because of its impact on dev & build performances. To add it, see [this documentation](https://react.dev/learn/react-compiler/installation).
+## Features
 
-## Expanding the ESLint configuration
+- 🔐 **Google Authentication** — Sign in with your Google account
+- 🗺️ **AI Roadmap** — Personalized learning path based on your domain and level
+- ✅ **Daily Tasks** — Tasks generated from your current roadmap step
+- 🧪 **Quiz** — Test your knowledge with domain-specific questions
+- 🤖 **AI Chatbot** — Ask anything about your career or roadmap
+- 🔥 **Streak Tracker** — Track your daily learning consistency
+- 🎯 **Mock Interview** — Practice interview questions with feedback
+- 💼 **Job Matches** — See job recommendations based on your skills
+- 📄 **Resume Scan** — Upload your resume for skill gap analysis
 
-If you are developing a production application, we recommend using TypeScript with type-aware lint rules enabled. Check out the [TS template](https://github.com/vitejs/vite/tree/main/packages/create-vite/template-react-ts) for information on how to integrate TypeScript and [`typescript-eslint`](https://typescript-eslint.io) in your project.
+## Tech Stack
+
+- **Frontend** — React 18, Vite, Tailwind CSS
+- **Authentication** — Firebase Auth (Google Sign-In)
+- **Database** — Firebase Firestore
+- **AI** — Google Gemini API (gemini-2.0-flash-lite)
+- **Deployment** — Vercel
+
+## Getting Started
+
+### 1. Clone the repo
+```bash
+git clone https://github.com/rubalwankhede/ai-roadmap-app.git
+cd ai-roadmap-app
+```
+
+### 2. Install dependencies
+```bash
+npm install
+```
+
+### 3. Set up environment variables
+Create a `.env` file in the root folder::
+
