@@ -1,15 +1,28 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { auth, db } from '../firebase/config'
+import { doc, setDoc } from 'firebase/firestore'
 
 function KnowledgeLevel() {
   const navigate = useNavigate()
   const [selected, setSelected] = useState('')
 
   const levels = [
-    { id: 'beginner', emoji: '🌱', title: 'Beginner', desc: 'I am just starting out' },
-    { id: 'intermediate', emoji: '🔥', title: 'Intermediate', desc: 'I know the basics already' },
-    { id: 'advanced', emoji: '⚡', title: 'Advanced', desc: 'I have solid experience' },
+    { id: 'Beginner', emoji: '🌱', title: 'Beginner', desc: 'I am just starting out' },
+    { id: 'Intermediate', emoji: '🔥', title: 'Intermediate', desc: 'I know the basics already' },
+    { id: 'Advanced', emoji: '⚡', title: 'Advanced', desc: 'I have solid experience' },
   ]
+
+  const handleNext = async () => {
+    if (!selected) return
+    const user = auth.currentUser
+    if (user) {
+      await setDoc(doc(db, 'users', user.uid), {
+        level: selected
+      }, { merge: true })
+    }
+    navigate('/domain')
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 to-purple-700 flex items-center justify-center">
@@ -39,8 +52,12 @@ function KnowledgeLevel() {
         </div>
 
         <button
-          onClick={() => selected && navigate('/domain')}
-          className="w-full mt-6 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-3 rounded-xl transition duration-200"
+          onClick={handleNext}
+          className={`w-full mt-6 font-semibold py-3 rounded-xl transition duration-200 ${
+            selected
+              ? 'bg-blue-600 hover:bg-blue-700 text-white'
+              : 'bg-gray-200 text-gray-400 cursor-not-allowed'
+          }`}
         >
           Next →
         </button>

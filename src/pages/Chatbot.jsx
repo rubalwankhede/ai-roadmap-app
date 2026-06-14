@@ -1,5 +1,6 @@
 import { useState } from 'react'
 import { useNavigate } from 'react-router-dom'
+import { geminiModel } from '../ai/gemini'
 
 function Chatbot() {
   const navigate = useNavigate()
@@ -16,25 +17,23 @@ function Chatbot() {
     setInput('')
     setLoading(true)
 
-    const response = await fetch('https://api.anthropic.com/v1/messages', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({
-        model: 'claude-sonnet-4-20250514',
-        max_tokens: 1000,
-        messages: [{ role: 'user', content: input }],
-        system: 'You are a helpful career and learning assistant for someone learning software engineering. Keep responses concise and encouraging.'
-      })
-    })
+    try {
+      const prompt = `You are a helpful career and learning assistant for someone learning software engineering. 
+      Keep responses concise, friendly and encouraging. 
+      User question: ${input}`
 
-    const data = await response.json()
-    const aiText = data.content?.[0]?.text || 'Sorry, I could not respond right now.'
-    setMessages(prev => [...prev, { role: 'ai', text: aiText }])
+      const result = await geminiModel.generateContent(prompt)
+      const aiText = result.response.text()
+      setMessages(prev => [...prev, { role: 'ai', text: aiText }])
+    } catch (err) {
+      setMessages(prev => [...prev, { role: 'ai', text: 'Sorry, I could not respond right now. Please try again!' }])
+    }
+
     setLoading(false)
   }
 
   return (
-    <div className="min-h-screen bg-gray-50 flex flex-col">
+    <div className="min-h-screen bg-gray-50 flex flex-col pb-16">
       <div className="bg-gradient-to-r from-blue-600 to-purple-700 text-white px-6 py-6">
         <button onClick={() => navigate('/dashboard')} className="text-blue-200 text-sm mb-3">← Back</button>
         <h1 className="text-2xl font-bold">🤖 AI Chatbot</h1>
@@ -44,25 +43,25 @@ function Chatbot() {
       <div className="flex-1 p-4 space-y-3 overflow-y-auto">
         {messages.map((msg, i) => (
           <div key={i} className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}>
-            <div className={`max-w-xs px-4 py-3 rounded-2xl text-sm ${
+            <div className={`max-w-sm px-4 py-3 rounded-2xl text-sm ${
               msg.role === 'user'
                 ? 'bg-blue-600 text-white rounded-br-none'
                 : 'bg-white text-gray-800 shadow-sm rounded-bl-none'
             }`}>
-              {msg.text}
+            {msg.text.replace(/\*\*/g, '').replace(/\*/g, '')}  
             </div>
           </div>
         ))}
         {loading && (
           <div className="flex justify-start">
-            <div className="bg-white px-4 py-3 rounded-2xl text-sm text-gray-400 shadow-sm">
-              Thinking...
+            <div className="bg-white px-4 py-3 rounded-2xl text-sm text-gray-400 shadow-sm animate-pulse">
+              Thinking... 🤔
             </div>
           </div>
         )}
       </div>
 
-      <div className="p-4 bg-white border-t border-gray-100 flex gap-3">
+      <div className="fixed bottom-16 left-0 right-0 p-4 bg-white border-t border-gray-100 flex gap-3">
         <input
           value={input}
           onChange={e => setInput(e.target.value)}
@@ -72,7 +71,8 @@ function Chatbot() {
         />
         <button
           onClick={send}
-          className="bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition"
+          disabled={loading}
+          className="bg-blue-600 text-white px-5 py-3 rounded-xl font-semibold text-sm hover:bg-blue-700 transition disabled:opacity-50"
         >
           Send
         </button>
