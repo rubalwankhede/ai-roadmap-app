@@ -1,16 +1,8 @@
-import { initializeApp } from 'firebase/app'
-import { getAuth, GoogleAuthProvider } from 'firebase/auth'
-import { getFirestore } from 'firebase/firestore'
-
-console.log("API KEY:", import.meta.env.VITE_FIREBASE_API_KEY)
-console.log("AUTH DOMAIN:", import.meta.env.VITE_FIREBASE_AUTH_DOMAIN)
-console.log("PROJECT ID:", import.meta.env.VITE_FIREBASE_PROJECT_ID)
-
 const firebaseConfig = {
-  apiKey: import.meta.env.VITE_FIREBASE_API_KEY,
-  authDomain: import.meta.env.VITE_FIREBASE_AUTH_DOMAIN,
-  projectId: import.meta.env.VITE_FIREBASE_PROJECT_ID,
-  storageBucket: import.meta.env.VITE_FIREBASE_STORAGE_BUCKET,
-  messagingSenderId: import.meta.env.VITE_FIREBASE_MESSAGING_SENDER_ID,
-  appId: import.meta.env.VITE_FIREBASE_APP_ID,
+  apiKey: "AIzaSyCjvowtI6hSvMPTG1XKUEbU_crKaIzBJfE",
+  authDomain: "ai-roadmap-generator-2cafc.firebaseapp.com",
+  projectId: "ai-roadmap-generator-2cafc",
+  storageBucket: "ai-roadmap-generator-2cafc.firebasestorage.app",
+  messagingSenderId: "1031230328611",
+  appId: "1:1031230328611:web:082eff808efd1c8542c696",
 }
