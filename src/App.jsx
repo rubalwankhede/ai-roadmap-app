@@ -1,56 +1,184 @@
-import { BrowserRouter as Router, Routes, Route, useLocation } from 'react-router-dom'
+import { useState, useRef } from "react";
+import jsPDF from "jspdf";
+import html2canvas from "html2canvas";
 
-import SignIn from './pages/signIn'
-import Onboarding from './pages/Onboarding'
-import KnowledgeLevel from './pages/KnowledgeLevel'
-import DomainSelection from './pages/DomainSelection'
-import ResumeUpload from './pages/ResumeUpload'
-import Dashboard from './pages/Dashboard'
-import Roadmap from './pages/Roadmap'
-import DailyTasks from './pages/DailyTasks'
-import Quiz from './pages/Quiz'
-import Chatbot from './pages/Chatbot'
-import Streak from './pages/Streak'
-import MockInterview from './pages/MockInterview'
-import JobRecommendations from './pages/JobRecommendations'
-import BottomNav from './components/BottomNav'
+export default function App() {
+  const resumeRef = useRef();
 
-const noNavPages = ['/', '/onboarding', '/knowledge', '/domain', '/resume']
+  const [form, setForm] = useState({
+    name: "",
+    email: "",
+    phone: "",
+    education: "",
+    skills: "",
+    projects: "",
+  });
 
-function Layout() {
-  const location = useLocation()
-  const showNav = !noNavPages.includes(location.pathname)
+  const handleChange = (e) => {
+    setForm({
+      ...form,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const skillCount = form.skills
+    ? form.skills.split(",").filter(Boolean).length
+    : 0;
+
+  const projectCount = form.projects
+    ? form.projects.split("\n").filter(Boolean).length
+    : 0;
+
+  const score = Math.min(
+    skillCount * 10 +
+      projectCount * 15 +
+      (form.education ? 20 : 0),
+    100
+  );
+
+  const downloadPDF = async () => {
+    const element = resumeRef.current;
+
+    const canvas = await html2canvas(element);
+
+    const imgData = canvas.toDataURL("image/png");
+
+    const pdf = new jsPDF("p", "mm", "a4");
+
+    const width = 190;
+    const height =
+      (canvas.height * width) / canvas.width;
+
+    pdf.addImage(
+      imgData,
+      "PNG",
+      10,
+      10,
+      width,
+      height
+    );
+
+    pdf.save("resume.pdf");
+  };
 
   return (
-    <>
-      <div className={showNav ? 'pb-16' : ''}>
-        <Routes>
-          <Route path="/" element={<SignIn />} />
-          <Route path="/onboarding" element={<Onboarding />} />
-          <Route path="/knowledge" element={<KnowledgeLevel />} />
-          <Route path="/domain" element={<DomainSelection />} />
-          <Route path="/resume" element={<ResumeUpload />} />
-          <Route path="/dashboard" element={<Dashboard />} />
-          <Route path="/roadmap" element={<Roadmap />} />
-          <Route path="/tasks" element={<DailyTasks />} />
-          <Route path="/quiz" element={<Quiz />} />
-          <Route path="/chatbot" element={<Chatbot />} />
-          <Route path="/streak" element={<Streak />} />
-          <Route path="/interview" element={<MockInterview />} />
-          <Route path="/jobs" element={<JobRecommendations />} />
-        </Routes>
+    <div className="min-h-screen bg-gradient-to-r from-blue-600 to-purple-700 p-6">
+      <h1 className="text-4xl font-bold text-center text-white mb-8">
+        AI Resume Builder
+      </h1>
+
+      <div className="grid md:grid-cols-2 gap-6">
+        {/* FORM */}
+        <div className="bg-white p-6 rounded-2xl shadow-lg">
+          <h2 className="text-2xl font-bold mb-4">
+            Enter Details
+          </h2>
+
+          <input
+            name="name"
+            placeholder="Full Name"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <input
+            name="email"
+            placeholder="Email"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <input
+            name="phone"
+            placeholder="Phone"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <input
+            name="education"
+            placeholder="Education"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="skills"
+            placeholder="Skills (comma separated)"
+            rows="4"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <textarea
+            name="projects"
+            placeholder="Projects (one per line)"
+            rows="5"
+            className="w-full border p-3 mb-3 rounded"
+            onChange={handleChange}
+          />
+
+          <div className="bg-green-100 p-4 rounded mb-4">
+            <h3 className="font-bold">
+              Resume Score: {score}/100
+            </h3>
+          </div>
+
+          <button
+            onClick={downloadPDF}
+            className="bg-blue-600 text-white px-5 py-3 rounded-lg w-full"
+          >
+            Download Resume PDF
+          </button>
+        </div>
+
+        {/* PREVIEW */}
+        <div
+          ref={resumeRef}
+          className="bg-white p-8 rounded-2xl shadow-lg"
+        >
+          <h1 className="text-3xl font-bold">
+            {form.name || "Your Name"}
+          </h1>
+
+          <p>{form.email}</p>
+          <p>{form.phone}</p>
+
+          <hr className="my-4" />
+
+          <h2 className="text-xl font-bold">
+            Education
+          </h2>
+
+          <p>{form.education}</p>
+
+          <h2 className="text-xl font-bold mt-4">
+            Skills
+          </h2>
+
+          <ul className="list-disc ml-5">
+            {form.skills
+              .split(",")
+              .filter(Boolean)
+              .map((skill, index) => (
+                <li key={index}>{skill}</li>
+              ))}
+          </ul>
+
+          <h2 className="text-xl font-bold mt-4">
+            Projects
+          </h2>
+
+          <ul className="list-disc ml-5">
+            {form.projects
+              .split("\n")
+              .filter(Boolean)
+              .map((project, index) => (
+                <li key={index}>{project}</li>
+              ))}
+          </ul>
+        </div>
       </div>
-      {showNav && <BottomNav />}
-    </>
-  )
+    </div>
+  );
 }
-
-function App() {
-  return (
-    <Router>
-      <Layout />
-    </Router>
-  )
-}
-
-export default App
