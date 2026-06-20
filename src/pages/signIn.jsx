@@ -1,47 +1,33 @@
 import { useNavigate } from 'react-router-dom'
+import { signInWithPopup } from 'firebase/auth'
+import { auth, provider } from '../firebase/config'
 
 function SignIn() {
   const navigate = useNavigate()
 
-  const handleStart = () => {
-    navigate('/onboarding')
+  const handleGoogleSignIn = async () => {
+    try {
+      await signInWithPopup(auth, provider)
+      navigate('/onboarding')
+    } catch (error) {
+      console.error('Sign in error:', error)
+    }
   }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-blue-600 via-purple-600 to-indigo-700 flex items-center justify-center px-6">
       <div className="bg-white rounded-3xl shadow-2xl p-10 w-full max-w-md text-center">
         <div className="text-6xl mb-4">🚀</div>
-
-        <h1 className="text-4xl font-bold text-gray-800 mb-3">
-          CareerMap AI
-        </h1>
-
-        <p className="text-gray-600 mb-8">
-          Generate personalized career roadmaps, skill plans, projects,
-          certifications, and interview preparation using AI.
-        </p>
-
+        <h1 className="text-4xl font-bold text-gray-800 mb-3">CareerMap AI</h1>
+        <p className="text-gray-600 mb-8">Your personalized career roadmap starts here</p>
         <button
-          onClick={handleStart}
-          className="w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-200"
+          onClick={handleGoogleSignIn}
+          className="w-full flex items-center justify-center gap-3 bg-blue-600 hover:bg-blue-700 text-white font-semibold py-4 px-6 rounded-xl transition duration-200"
         >
-          Get Started Free
+          <img src="https://www.google.com/favicon.ico" alt="Google" className="w-5 h-5" />
+          Sign in with Google
         </button>
-
-        <div className="grid grid-cols-3 gap-3 mt-8 text-sm text-gray-500">
-          <div>
-            <div className="font-bold text-lg text-gray-800">AI</div>
-            Roadmaps
-          </div>
-          <div>
-            <div className="font-bold text-lg text-gray-800">100+</div>
-            Resources
-          </div>
-          <div>
-            <div className="font-bold text-lg text-gray-800">Free</div>
-            Forever
-          </div>
-        </div>
+        <p className="text-gray-400 text-sm mt-4">Free forever · No credit card required</p>
       </div>
     </div>
   )
